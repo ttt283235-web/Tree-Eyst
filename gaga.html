@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abhishek - Glory Cloud Hub</title>
+    <style>
+        :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0a0a0b; --error: #ff4757; --success: #2ed573; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.6); width: 350px; text-align: center; transition: 0.5s; }
+        
+        h2 { font-size: 26px; margin-bottom: 20px; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; text-transform: uppercase; }
+        
+        input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; border: none; background: rgba(255,255,255,0.08); color: white; outline: none; box-sizing: border-box; transition: 0.3s; border: 1px solid transparent; }
+        input:focus { background: rgba(255,255,255,0.15); border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+        
+        .btn { width: 100%; padding: 15px; margin-top: 15px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.4s; text-transform: uppercase; letter-spacing: 1.5px; color: white; }
+        .btn-glow { background: linear-gradient(45deg, var(--primary), var(--secondary)); box-shadow: 0 5px 20px rgba(79, 172, 254, 0.4); }
+        .btn-glow:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6); opacity: 0.9; }
+        
+        #status { margin-top: 20px; font-size: 14px; font-weight: 500; display: none; padding: 10px; border-radius: 8px; }
+        .footer { font-size: 10px; margin-top: 30px; opacity: 0.4; letter-spacing: 3px; text-transform: uppercase; }
+        
+        /* Shake Animation for wrong pass */
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        .error-shake { animation: shake 0.3s ease-in-out; border: 1px solid var(--error) !important; }
+    </style>
+</head>
+<body>
+
+    <div class="glass-card" id="login-section">
+        <h2>🔒 ACCESS LOCK</h2>
+        <p style="font-size: 13px; opacity: 0.7; margin-bottom: 20px;">Abhishek, enter your secret key</p>
+        <input type="password" id="passInput" placeholder="Password...">
+        <button class="btn btn-glow" onclick="checkPass()">AUTHENTICATE</button>
+    </div>
+
+    <div class="glass-card" id="control-section" style="display: none;">
+        <h2>🚀 GLORY CLOUD</h2>
+        <input type="number" id="uid" placeholder="Target UID" value="4501634130">
+        <input type="number" id="emote" placeholder="Emote ID (Default: 10)" value="10">
+        
+        <button class="btn btn-glow" onclick="sendAction('invite')" style="background: #0072ff;">SEND INVITE</button>
+        
+        <div id="status"></div>
+        <div class="footer">MASTER PANEL • ABHISHEK</div>
+    </div>
+
+    <script>
+        // Aapka naya Vercel Base URL
+        const baseUrl = "https://glory-boat.vercel.app";
+
+        function checkPass() {
+            const pass = document.getElementById('passInput').value;
+            const card = document.getElementById('login-section');
+            if(pass === "123") {
+                card.style.opacity = "0";
+                setTimeout(() => {
+                    card.style.display = 'none';
+                    document.getElementById('control-section').style.display = 'block';
+                }, 400);
+            } else {
+                document.getElementById('passInput').classList.add('error-shake');
+                setTimeout(() => document.getElementById('passInput').classList.remove('error-shake'), 300);
+            }
+        }
+
+        async function sendAction(type) {
+            const uid = document.getElementById('uid').value;
+            const emote = document.getElementById('emote').value;
+            const status = document.getElementById('status');
+
+            if(!uid) { alert("UID daalna zaroori hai!"); return; }
+
+            // URL format update as per your link
+            const finalUrl = `${baseUrl}/${type}?uid=${uid}&emote_id=${emote}`;
+
+            status.style.display = "block";
+            status.style.color = "var(--primary)";
+            status.innerText = "🛰️ CONNECTION ESTABLISHED...";
+
+            try {
+                // Using 'no-cors' because Vercel/API might block direct browser reads
+                await fetch(finalUrl, { mode: 'no-cors' });
+                
+                status.style.color = "var(--success)";
+                status.innerText = "✅ COMMAND SENT TO CLOUD!";
+                
+                setTimeout(() => { status.style.display = "none"; }, 5000);
+            } catch (err) {
+                status.style.color = "var(--error)";
+                status.innerText = "❌ CLOUD ERROR: BOT OFFLINE";
+            }
+        }
+    </script>
+</body>
+</html>
